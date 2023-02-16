@@ -1,0 +1,19 @@
+- name: Check Apache is running
+  testinfra:
+    module: service
+    name: apache2
+    state: running
+
+- name: Check Apache is listening on port 443
+  testinfra:
+    module: socket
+    host: 127.0.0.1
+    port: 443
+    state: listening
+
+- name: Check Apache is serving the correct content
+  testinfra:
+    module: command
+    command: "curl -k https://localhost/"
+    regexp: ".*Hello World!.*"
+    
