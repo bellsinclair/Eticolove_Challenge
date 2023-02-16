@@ -1,0 +1,25 @@
+- hosts: webservers
+  become: true
+  tasks:
+    - name: Install Apache web server
+      apt:
+        name: apache2
+        state: present
+
+    - name: Copy index.html file
+      copy:
+        content: |
+          <html>
+          <head>
+          <title>Hello World</title>
+          </head>
+          <body>
+          <h1>Hello World!</h1>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+
+    - name: Restart Apache service
+      service:
+        name: apache2
+        state: restarted
