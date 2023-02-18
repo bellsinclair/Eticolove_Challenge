@@ -19,7 +19,7 @@
           </body>
           </html>
         dest: /var/www/html/index.html
-
+    
     - name: Restart Apache service
       service:
         name: apache2
@@ -33,7 +33,7 @@
       copy:
         src: key.pem
         dest: /etc/ssl/private/key.pem
-      mode: '0400'
+        mode: '0400'
     
     - name: Configure Apache SSL
       apache2_module:
@@ -71,3 +71,4 @@
         permanent: yes
       notify:
         - restart ufw
+
