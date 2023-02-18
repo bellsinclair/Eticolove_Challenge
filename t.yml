@@ -1,0 +1,46 @@
+---
+- hosts: webservers
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+       - name: Install SSL certificate
+         copy:
+           src: cert.pem
+           dest: /etc/ssl/certs/cert.pem
+
+       - name: Install SSL key
+         copy:
+           src: key.pem
+           dest: /etc/ssl/private/key.pem
+
+       - name: Configure Apache SSL
+         apache2_module:
+           name: ssl
+           state: present
+         
+       - name: Configure virtual host for SSL
+         apache2_vhost:
+           filename: default-ssl.conf
+           default_ssl_cert: /etc/ssl/certs/cert.pem
+           default_ssl_key: /etc/ssl/private/key.pem
+           state: present
+           listen: '*:443'
+           docroot: /var/www/html
+         
+       - name: Redirect HTTP to HTTPS
+         apache2_mod_rewrite:
+           state: present
+           conf: /etc/apache2/sites-enabled/000-default.conf
+           name: "Redirect HTTP to HTTPS"
+           rewrite_cond: " %{HTTPS} off"
+           rewrite_rule: " ^ https://%{SERVER_NAME}%{REQUEST_URI} [R,L]"
+         
+       - name: Allow only HTTPS connections
+         ufw:
+           rule: allow
+           port: "443"
+           proto: tcp
+           comment: "HTTPS"
+           state: enabled
+           permanent: yes

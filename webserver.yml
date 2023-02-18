@@ -33,7 +33,7 @@
       copy:
         src: key.pem
         dest: /etc/ssl/private/key.pem
-        mode: '0400'
+      mode: '0400'
     
     - name: Configure Apache SSL
       apache2_module:
